@@ -47,39 +47,39 @@ public class Percolation {
             value = (byte) (value | TOP);
         }
 
-        int currentIndex = index(row, col);
+        int currentIndex = plainIndex(row, col);
         int oldRootIndex;
         int newRootIndex;
         values[currentIndex] = value;
 
         // connect left neighbor
         if (col != 1 && isOpen(row, col - 1)) {
-            oldRootIndex = unionFind.find(index(row, col - 1));
-            unionFind.union(currentIndex, index(row, col - 1));
+            oldRootIndex = unionFind.find(plainIndex(row, col - 1));
+            unionFind.union(currentIndex, plainIndex(row, col - 1));
             newRootIndex = unionFind.find(currentIndex);
             values[currentIndex] = (byte) (values[newRootIndex] | values[oldRootIndex] | values[currentIndex]);
         }
 
         // connect right neighbor
         if (col != n && isOpen(row, col + 1)) {
-            oldRootIndex = unionFind.find(index(row, col + 1));
-            unionFind.union(currentIndex, index(row, col + 1));
+            oldRootIndex = unionFind.find(plainIndex(row, col + 1));
+            unionFind.union(currentIndex, plainIndex(row, col + 1));
             newRootIndex = unionFind.find(currentIndex);
             values[currentIndex] = (byte) (values[newRootIndex] | values[oldRootIndex] | values[currentIndex]);
         }
 
         // connect top neighbor
         if (row != 1 && isOpen(row - 1, col)) {
-            oldRootIndex = unionFind.find(index(row - 1, col));
-            unionFind.union(currentIndex, index(row - 1, col));
+            oldRootIndex = unionFind.find(plainIndex(row - 1, col));
+            unionFind.union(currentIndex, plainIndex(row - 1, col));
             newRootIndex = unionFind.find(currentIndex);
             values[currentIndex] = (byte) (values[newRootIndex] | values[oldRootIndex] | values[currentIndex]);
         }
 
         // connect top neighbor
         if (row != n && isOpen(row + 1, col)) {
-            oldRootIndex = unionFind.find(index(row + 1, col));
-            unionFind.union(currentIndex, index(row + 1, col));
+            oldRootIndex = unionFind.find(plainIndex(row + 1, col));
+            unionFind.union(currentIndex, plainIndex(row + 1, col));
             newRootIndex = unionFind.find(currentIndex);
             values[currentIndex] = (byte) (values[newRootIndex] | values[oldRootIndex] | values[currentIndex]);
         }
@@ -91,7 +91,7 @@ public class Percolation {
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         validateRC(row, col);
-        return (values[index(row, col)] & OPEN) == OPEN;
+        return (values[plainIndex(row, col)] & OPEN) == OPEN;
     }
 
     // is the site (row, col) full?
@@ -102,7 +102,7 @@ public class Percolation {
             return false;
         }
 
-        return (byte) (values[unionFind.find(index(row, col))] & TOP) == TOP;
+        return (byte) (values[unionFind.find(plainIndex(row, col))] & TOP) == TOP;
     }
 
     // returns the number of open sites
@@ -130,7 +130,7 @@ public class Percolation {
         return field;
     }
 
-    private int index(int row, int col) {
+    private int plainIndex(int row, int col) {
         return (row - 1) * n + col - 1;
     }
 //
@@ -175,6 +175,7 @@ public class Percolation {
 
     // test client (optional)
     public static void main(String[] args) {
-        System.out.println((byte) (OPEN | TOP | BOTTOM) == PERCOLATE);
+        System.gc();
     }
+
 }

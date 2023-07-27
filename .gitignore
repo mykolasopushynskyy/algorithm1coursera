@@ -24,5 +24,6 @@ replay_pid*
 
 # Covers JetBrains IDEs: IntelliJ
 .idea/
+target/
 *.iml
 *.iws

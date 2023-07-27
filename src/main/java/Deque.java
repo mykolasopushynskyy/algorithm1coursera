@@ -72,12 +72,12 @@ public class Deque<Item> implements Iterable<Item> {
     // remove and return the item from the back
     public Item removeLast() {
         validateElementExist();
-        Node node = front;
+        Node node = back;
         if (size == 1) {
             front = null;
             back = null;
         } else {
-            back = front.prev;
+            back = back.prev;
             back.next = null;
         }
         size--;
@@ -86,35 +86,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     // return an iterator over items in order from front to back
     public Iterator<Item> iterator() {
-        return new Iterator<>() {
-            private Node current = front;
-
-            @Override
-            public boolean hasNext() {
-                return current != null && current.next != null;
-            }
-
-            @Override
-            public Item next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException();
-                }
-                current = current.next;
-                return current.next.value;
-            }
-        };
-    }
-
-    private void validateNotNull(Item item) {
-        if (item == null) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private void validateElementExist() {
-        if (isEmpty()) {
-            throw new NoSuchElementException();
-        }
+        return new DequeIterator();
     }
 
     private class Node {
@@ -127,6 +99,41 @@ public class Deque<Item> implements Iterable<Item> {
         Node next;
         Node prev;
         Item value;
+    }
+
+    private class DequeIterator implements Iterator<Item> {
+        private Node current = front;
+
+        @Override
+        public boolean hasNext() {
+            return current != null && current.next != null;
+        }
+
+        @Override
+        public Item next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            current = current.next;
+            return current.next.value;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private void validateNotNull(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void validateElementExist() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
     }
 
     // unit testing (required)

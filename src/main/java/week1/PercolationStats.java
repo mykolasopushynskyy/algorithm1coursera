@@ -1,4 +1,4 @@
-package percolation;
+package week1;
 
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;

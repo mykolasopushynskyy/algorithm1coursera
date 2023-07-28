@@ -91,17 +91,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int indexesSize;
 
         public RandomizedQueueIterator() {
-            indexesSize = 0;
             indexes = new int[front];
             for (int i = 0; i < size(); i++) {
-                int insertIndex = StdRandom.uniformInt(indexesSize + 1);
-
-                for (int j = indexesSize; j > insertIndex; j--) {
-                    indexes[j] = indexes[j - 1];
-                }
-                indexes[insertIndex] = i;
-                indexesSize++;
+                indexes[i] = i;
             }
+            indexesSize = indexes.length;
         }
 
         @Override
@@ -114,7 +108,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return queue[indexes[--indexesSize]];
+            int uniformInt = StdRandom.uniformInt(indexesSize);
+            Item item = queue[indexes[uniformInt]];
+
+            indexes[uniformInt] = indexes[indexesSize - 1];
+            indexes[indexesSize - 1] = 0;
+            indexesSize--;
+
+            return item;
         }
 
         @Override

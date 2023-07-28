@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -103,10 +105,11 @@ public class Deque<Item> implements Iterable<Item> {
 
     private class DequeIterator implements Iterator<Item> {
         private Node current = front;
+        private int index = 0;
 
         @Override
         public boolean hasNext() {
-            return current != null && current.next != null;
+            return index < size;
         }
 
         @Override
@@ -114,8 +117,11 @@ public class Deque<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
+
+            Item value = current.value;
             current = current.next;
-            return current.next.value;
+            index++;
+            return value;
         }
 
         @Override
@@ -136,9 +142,46 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    // unit testing (required)
-    public static void main(String[] args) {
+    private static <T> void printDeque(Deque<T> deque) {
+        StdOut.print("isEmpty=");
+        StdOut.print(deque.isEmpty());
+        StdOut.print(", size=");
+        StdOut.print(deque.size());
 
+        StdOut.print(" [");
+        Iterator<T> iterator = deque.iterator();
+        while (iterator.hasNext()) {
+            StdOut.print(iterator.next());
+            if (iterator.hasNext()) {
+                StdOut.print(",");
+            }
+        }
+        StdOut.print("]");
+
+        StdOut.println();
     }
 
+    // unit testing (required)
+    public static void main(String[] args) {
+        Deque<Integer> deque = new Deque<>();
+
+        printDeque(deque);
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 1) {
+                deque.addFirst(i);
+            } else {
+                deque.addLast(i);
+            }
+            printDeque(deque);
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 1) {
+                deque.removeFirst();
+            } else {
+                deque.removeLast();
+            }
+            printDeque(deque);
+        }
+    }
 }

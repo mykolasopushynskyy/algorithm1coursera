@@ -168,7 +168,7 @@ public class Deque<Item> implements Iterable<Item> {
 
         printCollection(deque.iterator(), deque.isEmpty(), deque.size());
         for (int i = 0; i < size; i++) {
-            if (i % 2 == 1) {
+            if (i % 2 != 0) {
                 deque.addFirst(i);
             } else {
                 deque.addLast(i);
@@ -177,7 +177,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
 
         for (int i = 0; i < size; i++) {
-            if (i % 2 == 1) {
+            if (i % 2 != 0) {
                 deque.removeFirst();
             } else {
                 deque.removeLast();

@@ -5,9 +5,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-
-    Item[] queue;
-    int front;
+    private Item[] queue;
+    private int front;
 
     // construct an empty randomized queue
     public RandomizedQueue() {
@@ -29,7 +28,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public void enqueue(Item item) {
         validateNotNull(item);
         if (front == queue.length) {
-            resize();
+            resize(queue.length * 2);
         }
         queue[front] = item;
         front++;
@@ -47,6 +46,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         queue[front - 1] = null;
         front--;
+        if (front < 0.25 * queue.length) {
+            resize(queue.length / 2 == 0 ? 1 : queue.length / 2);
+        }
         return item;
     }
 
@@ -65,35 +67,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return new RandomizedQueueIterator();
     }
 
-    private class RandomizedQueueIterator implements Iterator<Item> {
-        RandomizedQueue<Integer> randomIdx;
-
-        public RandomizedQueueIterator() {
-            randomIdx = new RandomizedQueue<>();
-            for (int i = 0; i < front; i++) {
-                randomIdx.enqueue(i);
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            return randomIdx.size() > 0;
-        }
-
-        @Override
-        public Item next() {
-            return queue[randomIdx.dequeue()];
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-
-    private void resize() {
-        int newSize = queue.length * 2;
+    private void resize(int newSize) {
         Item[] newQueue = (Item[]) new Object[newSize];
 
         for (int i = 0; i < front; i++) {
@@ -111,6 +85,43 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private void validateElementsExist() {
         if (isEmpty()) {
             throw new NoSuchElementException();
+        }
+    }
+
+    private class RandomizedQueueIterator implements Iterator<Item> {
+        int[] indexes;
+        int maxIndex;
+
+        public RandomizedQueueIterator() {
+            maxIndex = 0;
+            indexes = new int[front];
+            for (int i = 0; i < size(); i++) {
+                int insertIndex = StdRandom.uniformInt(maxIndex + 1);
+
+                for (int j = maxIndex; j > insertIndex; j--) {
+                    indexes[j] = indexes[j - 1];
+                }
+                indexes[insertIndex] = i;
+                maxIndex++;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return maxIndex > 0;
+        }
+
+        @Override
+        public Item next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return queue[indexes[--maxIndex]];
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 

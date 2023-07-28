@@ -40,12 +40,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         int dequeIndex = gerRandomIndex();
         Item item = queue[dequeIndex];
-
-        for (int i = dequeIndex; i < front - 1; i++) {
-            queue[i] = queue[i + 1];
-        }
+        queue[dequeIndex] = queue[front - 1];
         queue[front - 1] = null;
         front--;
+
         if (front < 0.25 * queue.length) {
             resize(queue.length / 2 == 0 ? 1 : queue.length / 2);
         }
@@ -90,25 +88,25 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private class RandomizedQueueIterator implements Iterator<Item> {
         int[] indexes;
-        int maxIndex;
+        int indexesSize;
 
         public RandomizedQueueIterator() {
-            maxIndex = 0;
+            indexesSize = 0;
             indexes = new int[front];
             for (int i = 0; i < size(); i++) {
-                int insertIndex = StdRandom.uniformInt(maxIndex + 1);
+                int insertIndex = StdRandom.uniformInt(indexesSize + 1);
 
-                for (int j = maxIndex; j > insertIndex; j--) {
+                for (int j = indexesSize; j > insertIndex; j--) {
                     indexes[j] = indexes[j - 1];
                 }
                 indexes[insertIndex] = i;
-                maxIndex++;
+                indexesSize++;
             }
         }
 
         @Override
         public boolean hasNext() {
-            return maxIndex > 0;
+            return indexesSize > 0;
         }
 
         @Override
@@ -116,7 +114,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return queue[indexes[--maxIndex]];
+            return queue[indexes[--indexesSize]];
         }
 
         @Override

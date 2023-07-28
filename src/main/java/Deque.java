@@ -58,7 +58,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     // remove and return the item from the front
     public Item removeFirst() {
-        validateElementExist();
+        validateElementsExist();
         Node node = front;
         if (size == 1) {
             front = null;
@@ -73,7 +73,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     // remove and return the item from the back
     public Item removeLast() {
-        validateElementExist();
+        validateElementsExist();
         Node node = back;
         if (size == 1) {
             front = null;
@@ -136,20 +136,19 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    private void validateElementExist() {
+    private void validateElementsExist() {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
     }
 
-    private static <T> void printDeque(Deque<T> deque) {
+    private static <T> void printCollection(Iterator<T> iterator, boolean isEmpty, int size) {
         StdOut.print("isEmpty=");
-        StdOut.print(deque.isEmpty());
+        StdOut.print(isEmpty);
         StdOut.print(", size=");
-        StdOut.print(deque.size());
+        StdOut.print(size);
 
         StdOut.print(" [");
-        Iterator<T> iterator = deque.iterator();
         while (iterator.hasNext()) {
             StdOut.print(iterator.next());
             if (iterator.hasNext()) {
@@ -165,23 +164,25 @@ public class Deque<Item> implements Iterable<Item> {
     public static void main(String[] args) {
         Deque<Integer> deque = new Deque<>();
 
-        printDeque(deque);
-        for (int i = 0; i < 10; i++) {
+        int size = 10;
+
+        printCollection(deque.iterator(), deque.isEmpty(), deque.size());
+        for (int i = 0; i < size; i++) {
             if (i % 2 == 1) {
                 deque.addFirst(i);
             } else {
                 deque.addLast(i);
             }
-            printDeque(deque);
+            printCollection(deque.iterator(), deque.isEmpty(), deque.size());
         }
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < size; i++) {
             if (i % 2 == 1) {
                 deque.removeFirst();
             } else {
                 deque.removeLast();
             }
-            printDeque(deque);
+            printCollection(deque.iterator(), deque.isEmpty(), deque.size());
         }
     }
 }

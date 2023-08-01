@@ -5,7 +5,6 @@ import java.util.List;
 public class FastCollinearPoints {
     private final Point[] points;
     private final List<LineSegment> segmentList;
-    private LineSegment[] segments;
 
     // finds all line segments containing 4 points
     public FastCollinearPoints(Point[] points) {
@@ -27,9 +26,9 @@ public class FastCollinearPoints {
             // sort by slope order
             Arrays.sort(pointsAux, points[i].slopeOrder());
 
-            for (int lo = 1, hi = 1; hi < pointsAux.length; hi++) {
-                // skip equal sloped points
-                if (points[i].slopeTo(pointsAux[lo]) == points[i].slopeTo(pointsAux[hi])) {
+            for (int lo = 1, hi = 1; hi <= pointsAux.length; hi++) {
+                // skip equally sloped points
+                if (hi != pointsAux.length && points[i].slopeTo(pointsAux[lo]) == points[i].slopeTo(pointsAux[hi]) ) {
                     continue;
                 }
 
@@ -39,17 +38,15 @@ public class FastCollinearPoints {
                 }
                 lo = hi;
             }
-
         }
-        segments = segmentList.toArray(new LineSegment[0]);
     }
 
     public int numberOfSegments() {
-        return segments.length;
+        return segmentList.size();
     }
 
     public LineSegment[] segments() {
-        return segments;
+        return segmentList.toArray(new LineSegment[0]);
     }
 
     // validate points

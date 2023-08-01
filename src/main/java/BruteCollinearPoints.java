@@ -4,6 +4,9 @@ import java.util.List;
 
 public class BruteCollinearPoints {
 
+    private final Point[] points;
+    private List<LineSegment> segmentList;
+
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
         validatePoints(points);
@@ -11,10 +14,6 @@ public class BruteCollinearPoints {
         this.points = Arrays.copyOf(points, points.length);
         findLineSegments();
     }
-
-    private final Point[] points;
-    private LineSegment[] segments;
-    private List<LineSegment> segmentList;
 
     private void findLineSegments() {
         Arrays.sort(points);
@@ -32,15 +31,14 @@ public class BruteCollinearPoints {
                 }
             }
         }
-        segments = segmentList.toArray(new LineSegment[0]);
     }
 
     public int numberOfSegments() {
-        return segments.length;
+        return segmentList.size();
     }
 
     public LineSegment[] segments() {
-        return segments;
+        return segmentList.toArray(new LineSegment[0]);
     }
 
     // validate points

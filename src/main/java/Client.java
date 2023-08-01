@@ -111,7 +111,7 @@ public class Client {
 
     public static void main(String[] args) {
         executeFastCollinear(EX_4);
-//        executeBruteCollinear(EX_3);
+//        executeBruteCollinear(EX_4);
     }
 
 

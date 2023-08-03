@@ -1,19 +1,25 @@
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class Board {
     private final int[][] tiles;
     private final int n;
+    private int hamming;
+    private int manhattan;
+    private boolean isGoal;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
         this.n = tiles.length;
         this.tiles = copyOf(tiles);
+
+        cacheProperties();
     }
 
     // string representation of this board
@@ -38,58 +44,17 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
-        int hamming = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                // skip empty tile
-                if (tiles[i][j] == 0) {
-                    continue;
-                }
-
-                int expected = i * n + j + 1;
-                if (tiles[i][j] != expected) {
-                    hamming++;
-                }
-            }
-        }
         return hamming;
     }
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        int manhattan = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                // skip empty tile
-                if (tiles[i][j] == 0) {
-                    continue;
-                }
-
-                int expectedCol = (tiles[i][j] - 1) % n;
-                int expectedRow = (tiles[i][j] - 1 - expectedCol) / n;
-
-                manhattan += Math.abs(i - expectedRow) + Math.abs(j - expectedCol);
-            }
-        }
         return manhattan;
     }
 
     // is this board the goal board?
     public boolean isGoal() {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                // skip empty tile
-                if (tiles[i][j] == 0) {
-                    continue;
-                }
-
-                int expected = i * n + j + 1;
-                if (tiles[i][j] != expected) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return isGoal;
     }
 
     // does this board equal y?
@@ -162,6 +127,36 @@ public class Board {
         copyOf[i][j] = copyOf[i1][j1];
         copyOf[i1][j1] = tmp;
         return copyOf;
+    }
+
+    private void cacheProperties() {
+        boolean isGoal = true;
+        int hamming = 0;
+        int manhattan = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                // skip empty tile
+                if (tiles[i][j] == 0) {
+                    continue;
+                }
+
+                int expected = i * n + j + 1;
+                if (tiles[i][j] != expected) {
+                    isGoal = false;
+                    hamming++;
+                }
+
+                int expectedCol = (tiles[i][j] - 1) % n;
+                int expectedRow = (tiles[i][j] - 1 - expectedCol) / n;
+
+                manhattan += Math.abs(i - expectedRow) + Math.abs(j - expectedCol);
+            }
+        }
+
+        this.manhattan = manhattan;
+        this.isGoal = isGoal;
+        this.hamming = hamming;
     }
 
     /**

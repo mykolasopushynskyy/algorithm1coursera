@@ -1,15 +1,14 @@
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.StdOut;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Solver {
 
     private final Board initial;
     private final MinPQ<SearchNode> movesPQ;
-    private List<Board> solution;
+    private SearchNode last;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -17,7 +16,6 @@ public class Solver {
             throw new IllegalArgumentException();
         }
 
-        this.solution = null;
         this.initial = initial;
         this.movesPQ = new MinPQ<>(manhattanPriority());
         solve();
@@ -25,17 +23,23 @@ public class Solver {
 
     // is the initial board solvable? (see below)
     public boolean isSolvable() {
-        return solution != null;
+        return last != null;
     }
 
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() {
-        return solution == null ? -1 : solution.size();
+        return last == null ? -1 : last.count;
     }
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        return solution == null ? null : new ArrayList<>(solution);
+        Stack<Board> solution = new Stack<>();
+        SearchNode move = last;
+        while (move != null) {
+            solution.push(move.board);
+            move = move.previous;
+        }
+        return last == null ? null : solution;
     }
 
     private static Comparator<SearchNode> manhattanPriority() {
@@ -46,7 +50,7 @@ public class Solver {
         return Comparator.comparingInt(node -> node.count + node.board.hamming());
     }
 
-    private class SearchNode {
+    private static class SearchNode {
         private final Board board;
         private final SearchNode previous;
         private final int count;
@@ -61,31 +65,25 @@ public class Solver {
     private void solve() {
         boolean shouldSearch;
         movesPQ.insert(new SearchNode(initial, null));
-        SearchNode move = movesPQ.delMin();
+        last = movesPQ.delMin();
 
-        while (!move.board.isGoal()) {
+        while (!last.board.isGoal()) {
             shouldSearch = false;
-            for (Board nextBoard : move.board.neighbors()) {
-                if (move.previous != null && !nextBoard.equals(move.previous.board)) {
-                    movesPQ.insert(new SearchNode(nextBoard, move));
+            for (Board nextBoard : last.board.neighbors()) {
+                Board previousBoard = last.previous != null ? last.previous.board : null;
+                if (!nextBoard.equals(previousBoard)) {
+                    movesPQ.insert(new SearchNode(nextBoard, last));
                     shouldSearch = true;
                 }
             }
+
             // dead end
             if (!shouldSearch) {
                 return;
             }
-            move = movesPQ.delMin();
-        }
 
-        // convert to boards
-        List<SearchNode> solution = new ArrayList<>();
-        while (move.previous != null) {
-            solution.add(move);
-            move = move.previous;
+            last = movesPQ.delMin();
         }
-        solution.sort(Comparator.comparing(m -> m.count));
-        this.solution = solution.stream().map(m -> m.board).collect(Collectors.toList());
     }
 
 
@@ -94,9 +92,19 @@ public class Solver {
      * Test Data and methods for debugging
      * ===================================================================================
      */
+    private static final int[][] EX_1 = new int[][]{
+            {0, 1, 3},
+            {4, 2, 5},
+            {7, 8, 6}
+    };
+
     // test client (see below)
     public static void main(String[] args) {
-
+        Solver s = new Solver(new Board(EX_1));
+        assert s.solution() != null;
+        for(Board b: s.solution()) {
+            StdOut.println(b);
+        }
     }
 
 }

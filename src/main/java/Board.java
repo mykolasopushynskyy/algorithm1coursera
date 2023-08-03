@@ -59,10 +59,10 @@ public class Board {
 
     // does this board equal y?
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board board = (Board) o;
+    public boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
+        Board board = (Board) that;
         if (n != board.n) return false;
 
         for (int i = 0; i < n; i++) {
@@ -113,11 +113,11 @@ public class Board {
         return neighbors[0];
     }
 
-    private int[][] copyOf(int[][] tiles) {
+    private int[][] copyOf(int[][] board) {
         final int[][] copy = new int[n][];
         for (int i = 0; i < n; i++) {
             copy[i] = new int[n];
-            System.arraycopy(tiles[i], 0, copy[i], 0, n);
+            System.arraycopy(board[i], 0, copy[i], 0, n);
         }
         return copy;
     }
@@ -130,9 +130,9 @@ public class Board {
     }
 
     private void cacheProperties() {
-        boolean isGoal = true;
-        int hamming = 0;
-        int manhattan = 0;
+        boolean isSolved = true;
+        int hammingDistance = 0;
+        int manhattanDistance = 0;
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -143,20 +143,20 @@ public class Board {
 
                 int expected = i * n + j + 1;
                 if (tiles[i][j] != expected) {
-                    isGoal = false;
-                    hamming++;
+                    isSolved = false;
+                    hammingDistance++;
                 }
 
                 int expectedCol = (tiles[i][j] - 1) % n;
                 int expectedRow = (tiles[i][j] - 1 - expectedCol) / n;
 
-                manhattan += Math.abs(i - expectedRow) + Math.abs(j - expectedCol);
+                manhattanDistance += Math.abs(i - expectedRow) + Math.abs(j - expectedCol);
             }
         }
 
-        this.manhattan = manhattan;
-        this.isGoal = isGoal;
-        this.hamming = hamming;
+        this.manhattan = manhattanDistance;
+        this.isGoal = isSolved;
+        this.hamming = hammingDistance;
     }
 
     /**

@@ -49,7 +49,7 @@ public class Solver {
     private class SearchNode {
         private final Board board;
         private final SearchNode previous;
-        private int count;
+        private final int count;
 
         public SearchNode(Board board, SearchNode previous) {
             this.board = board;
@@ -79,7 +79,7 @@ public class Solver {
         }
 
         // convert to boards
-        List<SearchNode> solution = new ArrayList<>()
+        List<SearchNode> solution = new ArrayList<>();
         while (move.previous != null) {
             solution.add(move);
             move = move.previous;

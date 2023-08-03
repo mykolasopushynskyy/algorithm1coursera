@@ -2,6 +2,8 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class Board {
     private final int[][] tiles;
@@ -138,16 +140,10 @@ public class Board {
         return result;
     }
 
-    private int[][] swap(int[][] copyOf, int i, int j, int i1, int j1) {
-        int tmp = copyOf[i][j];
-        copyOf[i][j] = copyOf[i1][j1];
-        copyOf[i1][j1] = tmp;
-        return copyOf;
-    }
-
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        Board[] neighbors = ((List<Board>) neighbors()).toArray(new Board[0]);
+        Board[] neighbors = StreamSupport.stream(neighbors().spliterator(), false)
+                .toArray(Board[]::new);
         StdRandom.shuffle(neighbors);
         return neighbors[0];
     }
@@ -159,6 +155,13 @@ public class Board {
             System.arraycopy(tiles[i], 0, copy[i], 0, n);
         }
         return copy;
+    }
+
+    private int[][] swap(int[][] copyOf, int i, int j, int i1, int j1) {
+        int tmp = copyOf[i][j];
+        copyOf[i][j] = copyOf[i1][j1];
+        copyOf[i1][j1] = tmp;
+        return copyOf;
     }
 
     /**
@@ -202,6 +205,7 @@ public class Board {
         assert !board3.isGoal() : "Board must not be the goal board";
         printNeighbours(board1);
         assert board1.equals(board2) : "Boards are not equal after printing neighbours";
+        assert !board1.equals(board1.twin()) : "Boards are not equal with twin";
     }
 
     private static void printNeighbours(Board board) {

@@ -7,7 +7,8 @@ import java.util.Comparator;
 public class Solver {
 
     private final Board initial;
-    private final MinPQ<SearchNode> movesPQ;
+    private final MinPQ<SearchNode> movePQ;
+    private final MinPQ<SearchNode> twinPQ;
     private SearchNode last;
 
     // find a solution to the initial board (using the A* algorithm)
@@ -15,9 +16,11 @@ public class Solver {
         if (initial == null) {
             throw new IllegalArgumentException();
         }
+        Comparator<SearchNode> priority = manhattanPriority();
 
         this.initial = initial;
-        this.movesPQ = new MinPQ<>(manhattanPriority());
+        this.movePQ = new MinPQ<>(priority);
+        this.twinPQ = new MinPQ<>(priority);
         solve();
     }
 
@@ -33,13 +36,17 @@ public class Solver {
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
+        if (last == null) {
+            return null;
+        }
+
         Stack<Board> solution = new Stack<>();
         SearchNode move = last;
         while (move != null) {
             solution.push(move.board);
             move = move.previous;
         }
-        return last == null ? null : solution;
+        return solution;
     }
 
     private static Comparator<SearchNode> manhattanPriority() {
@@ -63,27 +70,34 @@ public class Solver {
     }
 
     private void solve() {
-        boolean shouldSearch;
-        movesPQ.insert(new SearchNode(initial, null));
-        last = movesPQ.delMin();
+        SearchNode twin;
+        SearchNode last;
+        movePQ.insert(new SearchNode(initial, null));
+        twinPQ.insert(new SearchNode(initial.twin(), null));
 
-        while (!last.board.isGoal()) {
-            shouldSearch = false;
-            for (Board nextBoard : last.board.neighbors()) {
-                Board previousBoard = last.previous != null ? last.previous.board : null;
-                if (!nextBoard.equals(previousBoard)) {
-                    movesPQ.insert(new SearchNode(nextBoard, last));
-                    shouldSearch = true;
-                }
-            }
+        do {
+            last = findNextMove(movePQ);
+            twin = findNextMove(twinPQ);
+        } while (!last.board.isGoal() && !twin.board.isGoal());
 
-            // dead end
-            if (!shouldSearch) {
-                return;
-            }
+        this.last = last.board.isGoal() ? last : null;
+    }
 
-            last = movesPQ.delMin();
+    private SearchNode findNextMove(MinPQ<SearchNode> moves) {
+        SearchNode nextMove = moves.delMin();
+
+        if (nextMove.board.isGoal()) {
+            return nextMove;
         }
+
+        for (Board nextBoard : nextMove.board.neighbors()) {
+            Board previousBoard = nextMove.previous != null ? nextMove.previous.board : null;
+            if (!nextBoard.equals(previousBoard)) {
+                moves.insert(new SearchNode(nextBoard, nextMove));
+            }
+        }
+
+        return nextMove;
     }
 
 
@@ -98,11 +112,25 @@ public class Solver {
             {7, 8, 6}
     };
 
+    private static final int[][] UNSOLVABLE = new int[][]{
+            {1, 2, 3},
+            {4, 5, 6},
+            {8, 7, 0}
+    };
+
+    private static final int[][] EX_2 = new int[][]{
+            {0, 1},
+            {3, 2}
+    };
+
     // test client (see below)
     public static void main(String[] args) {
+        Solver unsolvable = new Solver(new Board(UNSOLVABLE));
+        assert unsolvable.solution() == null;
+        assert !unsolvable.isSolvable();
+
         Solver s = new Solver(new Board(EX_1));
-        assert s.solution() != null;
-        for(Board b: s.solution()) {
+        for (Board b : s.solution()) {
             StdOut.println(b);
         }
     }

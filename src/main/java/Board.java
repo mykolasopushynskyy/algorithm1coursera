@@ -1,10 +1,8 @@
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 public class Board {
     private final int[][] tiles;
@@ -107,10 +105,18 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        Board[] neighbors = StreamSupport.stream(neighbors().spliterator(), false)
-                .toArray(Board[]::new);
-        StdRandom.shuffle(neighbors);
-        return neighbors[0];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - 1; j++) {
+                // skip empty tile
+                if (tiles[i][j] == 0) {
+                    continue;
+                }
+                Board board = new Board(swap(tiles, i, j, i, j + 1));
+                swap(tiles, i, j, i, j + 1); // swap back
+                return board;
+            }
+        }
+        return null;
     }
 
     private int[][] copyOf(int[][] board) {
@@ -122,11 +128,11 @@ public class Board {
         return copy;
     }
 
-    private int[][] swap(int[][] copyOf, int i, int j, int i1, int j1) {
-        int tmp = copyOf[i][j];
-        copyOf[i][j] = copyOf[i1][j1];
-        copyOf[i1][j1] = tmp;
-        return copyOf;
+    private int[][] swap(int[][] array, int i, int j, int i1, int j1) {
+        int tmp = array[i][j];
+        array[i][j] = array[i1][j1];
+        array[i1][j1] = tmp;
+        return array;
     }
 
     private void cacheProperties() {
@@ -154,9 +160,9 @@ public class Board {
             }
         }
 
-        this.manhattan = manhattanDistance;
         this.isGoal = isSolved;
         this.hamming = hammingDistance;
+        this.manhattan = manhattanDistance;
     }
 
     /**

@@ -6,9 +6,6 @@ import java.util.Comparator;
 
 public class Solver {
 
-    private final Board initial;
-    private final MinPQ<SearchNode> movePQ;
-    private final MinPQ<SearchNode> twinPQ;
     private SearchNode last;
 
     // find a solution to the initial board (using the A* algorithm)
@@ -16,12 +13,7 @@ public class Solver {
         if (initial == null) {
             throw new IllegalArgumentException();
         }
-        Comparator<SearchNode> priority = manhattanPriority();
-
-        this.initial = initial;
-        this.movePQ = new MinPQ<>(priority);
-        this.twinPQ = new MinPQ<>(priority);
-        solve();
+        solve(initial);
     }
 
     // is the initial board solvable? (see below)
@@ -49,27 +41,10 @@ public class Solver {
         return solution;
     }
 
-    private static Comparator<SearchNode> manhattanPriority() {
-        return Comparator.comparingInt(node -> node.count + node.board.manhattan());
-    }
+    private void solve(Board initial) {
+        MinPQ<SearchNode> movePQ = new MinPQ<>(manhattanPriority());
+        MinPQ<SearchNode> twinPQ = new MinPQ<>(manhattanPriority());
 
-    private static Comparator<SearchNode> hammingPriority() {
-        return Comparator.comparingInt(node -> node.count + node.board.hamming());
-    }
-
-    private static class SearchNode {
-        private final Board board;
-        private final SearchNode previous;
-        private final int count;
-
-        public SearchNode(Board board, SearchNode previous) {
-            this.board = board;
-            this.previous = previous;
-            this.count = previous == null ? 0 : previous.count + 1;
-        }
-    }
-
-    private void solve() {
         SearchNode twin;
         SearchNode next;
 
@@ -82,6 +57,26 @@ public class Solver {
         } while (!next.board.isGoal() && !twin.board.isGoal());
 
         this.last = next.board.isGoal() ? next : null;
+    }
+
+    private static Comparator<SearchNode> manhattanPriority() {
+        return Comparator.comparingInt(node -> node.count + node.manhattan);
+    }
+
+    private static class SearchNode {
+        private final Board board;
+        private final SearchNode previous;
+        private final int count;
+        private final int manhattan;
+
+        public SearchNode(Board board, SearchNode previous) {
+            this.board = board;
+            this.previous = previous;
+            this.count = previous == null ? 0 : previous.count + 1;
+            // reduces manhattan calls when comparing search nodes (i.e. caching has to be done in Solver class)
+            // same has to be done for hamming if needed
+            this.manhattan = board.manhattan();
+        }
     }
 
     private SearchNode findNextMove(MinPQ<SearchNode> moves) {
@@ -123,12 +118,12 @@ public class Solver {
             {0, 1},
             {3, 2}
     };
+
     private static final int[][] EX_3 = new int[][]{
             {6, 3, 8},
             {5, 4, 1},
             {7, 2, 0}
     };
-
 
     // test client (see below)
     public static void main(String[] args) {
@@ -144,5 +139,4 @@ public class Solver {
             StdOut.println(b);
         }
     }
-
 }

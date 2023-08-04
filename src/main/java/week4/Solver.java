@@ -1,3 +1,5 @@
+package week4;
+
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
@@ -73,7 +75,7 @@ public class Solver {
             this.board = board;
             this.previous = previous;
             this.count = previous == null ? 0 : previous.count + 1;
-            // reduces manhattan calls when comparing search nodes (i.e. caching has to be done in Solver class)
+            // reduces manhattan calls when comparing search nodes (i.e. caching has to be done in week4.Solver class)
             // same has to be done for hamming if needed
             this.manhattan = board.manhattan();
         }

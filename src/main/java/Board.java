@@ -108,7 +108,7 @@ public class Board {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n - 1; j++) {
                 // skip empty tile
-                if (tiles[i][j] == 0) {
+                if (tiles[i][j] == 0 || tiles[i][j + 1] == 0) {
                     continue;
                 }
                 Board board = new Board(swap(tiles, i, j, i, j + 1));

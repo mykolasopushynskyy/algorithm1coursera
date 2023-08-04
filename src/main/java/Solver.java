@@ -71,16 +71,17 @@ public class Solver {
 
     private void solve() {
         SearchNode twin;
-        SearchNode last;
+        SearchNode next;
+
         movePQ.insert(new SearchNode(initial, null));
         twinPQ.insert(new SearchNode(initial.twin(), null));
 
         do {
-            last = findNextMove(movePQ);
+            next = findNextMove(movePQ);
             twin = findNextMove(twinPQ);
-        } while (!last.board.isGoal() && !twin.board.isGoal());
+        } while (!next.board.isGoal() && !twin.board.isGoal());
 
-        this.last = last.board.isGoal() ? last : null;
+        this.last = next.board.isGoal() ? next : null;
     }
 
     private SearchNode findNextMove(MinPQ<SearchNode> moves) {
@@ -122,6 +123,12 @@ public class Solver {
             {0, 1},
             {3, 2}
     };
+    private static final int[][] EX_3 = new int[][]{
+            {6, 3, 8},
+            {5, 4, 1},
+            {7, 2, 0}
+    };
+
 
     // test client (see below)
     public static void main(String[] args) {
@@ -129,7 +136,10 @@ public class Solver {
         assert unsolvable.solution() == null;
         assert !unsolvable.isSolvable();
 
-        Solver s = new Solver(new Board(EX_1));
+        long now = System.currentTimeMillis();
+        System.out.println();
+        Solver s = new Solver(new Board(EX_3));
+        System.out.println(System.currentTimeMillis() - now);
         for (Board b : s.solution()) {
             StdOut.println(b);
         }

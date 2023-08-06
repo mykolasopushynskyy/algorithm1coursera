@@ -30,6 +30,7 @@ public class KdTree {
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
+        validateNotNull(p);
         return get(root, p, true) != null;
     }
 
@@ -40,13 +41,14 @@ public class KdTree {
 
     // all points that are inside the rectangle (or on the boundary)
     public Iterable<Point2D> range(RectHV rect) {
+        validateNotNull(rect);
         return range(root, rect, true, new ArrayList<>());
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
         validateNotNull(p);
-        return nearest(root, p, true, Double.POSITIVE_INFINITY, null);
+        return nearest(root, p, true, null);
     }
 
     private void validateNotNull(Object object) {
@@ -167,7 +169,7 @@ public class KdTree {
         return points;
     }
 
-    private Point2D nearest(Node node, Point2D point, boolean isVertical, double distance, Point2D nearest) {
+    private Point2D nearest(Node node, Point2D query, boolean isVertical, Point2D nearest) {
         if (node == null) {
             return nearest;
         }
@@ -175,20 +177,53 @@ public class KdTree {
         // root node initialization
         if (nearest == null) {
             nearest = node.point;
-            distance = point.distanceSquaredTo(nearest);
         }
 
         // champion found
-        if (point.distanceSquaredTo(node.point) < distance) {
+        if (query.distanceSquaredTo(node.point) < query.distanceSquaredTo(nearest)) {
             nearest = node.point;
-            distance = point.distanceSquaredTo(nearest);
         }
 
-        Point2D nearestLeft = nearest(node.left, point, !isVertical, distance, nearest);
-        if (nearest.equals(nearestLeft)) {
-            nearest = nearest(node.right, point, !isVertical, distance, nearest);
+        if (isVertical) {
+            if (node.point.x() >= query.x()) {
+                Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
+
+                if (nearestLeft.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
+                    Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
+                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
+                } else {
+                    nearest = nearestLeft;
+                }
+            } else {
+                Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
+
+                if (nearestRight.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
+                    Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
+                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
+                } else {
+                    nearest = nearestRight;
+                }
+            }
         } else {
-            nearest = nearestLeft;
+            if (node.point.y() >= query.y()) {
+                Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
+
+                if (nearestLeft.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
+                    Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
+                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
+                } else {
+                    nearest = nearestLeft;
+                }
+            } else {
+                Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
+
+                if (nearestRight.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
+                    Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
+                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
+                } else {
+                    nearest = nearestRight;
+                }
+            }
         }
 
         return nearest;

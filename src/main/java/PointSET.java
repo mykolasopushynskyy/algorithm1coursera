@@ -67,12 +67,6 @@ public class PointSET {
         }
     }
 
-    /**
-     * ===================================================================================
-     * Test Data and methods for debugging
-     * ===================================================================================
-     */
-
     // unit testing of the methods (optional)
     public static void main(String[] args) {
         throw new RuntimeException();

@@ -71,23 +71,23 @@ public class KdTree {
             return new Node(point);
         }
 
-        if(node.point.equals(point)) {
+        if (node.point.equals(point)) {
             return node;
         }
 
         if (isVertical) {
             if (node.point.x() < point.x()) {
-                node.left = insert(node.left, point, !isVertical);
+                node.right = insert(node.right, point, !isVertical);
             }
             if (node.point.x() >= point.x()) {
-                node.right = insert(node.right, point, !isVertical);
+                node.left = insert(node.left, point, !isVertical);
             }
         } else {
             if (node.point.y() < point.y()) {
-                node.left = insert(node.left, point, !isVertical);
+                node.right = insert(node.right, point, !isVertical);
             }
             if (node.point.y() >= point.y()) {
-                node.right = insert(node.right, point, !isVertical);
+                node.left = insert(node.left, point, !isVertical);
             }
         }
 
@@ -105,17 +105,17 @@ public class KdTree {
 
         if (isVertical) {
             if (node.point.x() < point.x()) {
-                return get(node.left, point, !isVertical);
+                return get(node.right, point, !isVertical);
             }
             if (node.point.x() >= point.x()) {
-                return get(node.right, point, !isVertical);
+                return get(node.left, point, !isVertical);
             }
         } else {
             if (node.point.y() < point.y()) {
-                return get(node.left, point, !isVertical);
+                return get(node.right, point, !isVertical);
             }
             if (node.point.y() >= point.y()) {
-                return get(node.right, point, !isVertical);
+                return get(node.left, point, !isVertical);
             }
         }
 
@@ -146,7 +146,7 @@ public class KdTree {
                 range(node.right, rectHV, !isVertical, points);
             }
             if (node.point.x() > rectHV.xmax()) {
-                range(node.right, rectHV, !isVertical, points);
+                range(node.left, rectHV, !isVertical, points);
             }
             if (node.point.x() >= rectHV.xmin() && node.point.x() <= rectHV.xmax()) {
                 range(node.left, rectHV, !isVertical, points);
@@ -157,7 +157,7 @@ public class KdTree {
                 range(node.right, rectHV, !isVertical, points);
             }
             if (node.point.y() > rectHV.ymax()) {
-                range(node.right, rectHV, !isVertical, points);
+                range(node.left, rectHV, !isVertical, points);
             }
             if (node.point.y() >= rectHV.ymin() && node.point.y() <= rectHV.ymax()) {
                 range(node.left, rectHV, !isVertical, points);
@@ -191,12 +191,6 @@ public class KdTree {
 
         return nearest;
     }
-
-    /**
-     * ===================================================================================
-     * Test Data and methods for debugging
-     * ===================================================================================
-     */
 
     // unit testing of the methods (optional)
     public static void main(String[] args) {

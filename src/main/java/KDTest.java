@@ -36,19 +36,29 @@ public class KDTest {
         add(new Point2D(1.0, 0.5));
     }};
 
-    private static final List<Point2D> CONTAINS_TEST = new ArrayList<>() {{
-        add(new Point2D(0.25, 0.75));
-        add(new Point2D(0.0, 0.0));
-        add(new Point2D(0.75, 0.5));
-        add(new Point2D(0.75, 1.0));
-        add(new Point2D(0.75, 0.75));
-        add(new Point2D(0.0, 0.75));
-        add(new Point2D(0.5, 0.0));
-        add(new Point2D(0.25, 0.25));
-        add(new Point2D(0.75, 0.0));
-        add(new Point2D(1.0, 0.75));
+    private static final List<Point2D> NEAREST_TEST = new ArrayList<>() {{
+        add(new Point2D(0.75, 0.6875));
+        add(new Point2D(0.875, 0.5625));
+        add(new Point2D(0.1875, 1.0));
+        add(new Point2D(0.375, 0.5));
+        add(new Point2D(0.0, 0.3125));
+        add(new Point2D(0.375, 0.0625));
+        add(new Point2D(0.25, 0.625));
+        add(new Point2D(0.5, 0.1875));
+        add(new Point2D(0.875, 0.9375));
+        add(new Point2D(0.5, 0.25));
+        add(new Point2D(0.375, 0.125));
+        add(new Point2D(0.5625, 1.0));
+        add(new Point2D(0.9375, 0.8125));
+        add(new Point2D(0.0, 0.625));
+        add(new Point2D(0.875, 0.4375));
+        add(new Point2D(0.8125, 0.0));
+        add(new Point2D(0.0, 1.0));
+        add(new Point2D(0.875, 0.625));
+        add(new Point2D(0.0625, 0.4375));
+        add(new Point2D(0.5, 0.6875));
     }};
-
+    private static final Point2D NEAREST_QUERY = new Point2D(0.0, 0.6875);
 
     private static final RectHV R2 = new RectHV(0.25, 0.25, 0.75, 1.0);
 
@@ -101,9 +111,41 @@ public class KDTest {
         StdDraw.show();
     }
 
+    private static void visualizeNearest(List<Point2D> points, Point2D query) {
+        // draw the points
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setXscale(0, X_SCALE);
+        StdDraw.setYscale(0, Y_SCALE);
+
+        for (Point2D p : points) {
+            drawPoint(p);
+        }
+
+
+        StdDraw.show();
+
+        KdTree kdTree = new KdTree();
+
+        for (Point2D p : points)
+            kdTree.insert(p);
+
+        Point2D nearest = kdTree.nearest(query);
+
+        drawPoint(query, Color.BLUE);
+        drawPoint(nearest, Color.RED);
+        StdDraw.line(query.x(), query.y(), nearest.x(), nearest.y());
+
+        drawPoint(nearest, Color.RED);
+
+
+        StdDraw.show();
+    }
+
+
     // unit testing of the methods (optional)
     public static void main(String[] args) {
 //        visualizeKDRange(EX_1, R1);
-        visualizeKDRange(EX_2, R2);
+//        visualizeKDRange(EX_2, R2);
+        visualizeNearest(NEAREST_TEST, NEAREST_QUERY);
     }
 }

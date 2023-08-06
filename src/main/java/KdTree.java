@@ -178,15 +178,17 @@ public class KdTree {
             distance = point.distanceSquaredTo(nearest);
         }
 
-        // nearer found
+        // champion found
         if (point.distanceSquaredTo(node.point) < distance) {
             nearest = node.point;
             distance = point.distanceSquaredTo(nearest);
         }
 
-        nearest = nearest(node.left, point, !isVertical, distance, nearest);
-        if (nearest.equals(node.point)) {
+        Point2D nearestLeft = nearest(node.left, point, !isVertical, distance, nearest);
+        if (nearest.equals(nearestLeft)) {
             nearest = nearest(node.right, point, !isVertical, distance, nearest);
+        } else {
+            nearest = nearestLeft;
         }
 
         return nearest;

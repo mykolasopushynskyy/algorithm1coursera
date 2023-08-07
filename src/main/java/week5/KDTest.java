@@ -1,3 +1,5 @@
+package week5;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
@@ -58,6 +60,13 @@ public class KDTest {
         add(new Point2D(0.8125, 0.90625));
         add(new Point2D(0.5, 0.28125));
     }};
+
+    private static final List<Point2D> NEAREST_TEST1 = new ArrayList<>() {{
+        add(new Point2D(0.5, 0.5));
+//        add(new Point2D(0.25, 0.5));
+        add(new Point2D(0.75, 0.5));
+    }};
+
     private static final Point2D NEAREST_QUERY = new Point2D(0.0625, 0.34375);
 
     private static final RectHV R2 = new RectHV(0.25, 0.25, 0.75, 1.0);
@@ -121,7 +130,6 @@ public class KDTest {
         StdDraw.enableDoubleBuffering();
         StdDraw.setXscale(0, X_SCALE);
         StdDraw.setYscale(0, Y_SCALE);
-
 
         KdTree kdTree = new KdTree();
 

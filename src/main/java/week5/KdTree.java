@@ -1,3 +1,5 @@
+package week5;
+
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
@@ -184,18 +186,22 @@ public class KdTree {
             nearest = node.point;
         }
 
+        double rectangleDistance = isVertical ?
+                Math.abs(node.point.x() - query.x()) :
+                Math.abs(node.point.y() - query.y());
+
         if (isVertical) {
             if (node.point.x() > query.x()) {
                 nearest = nearest(node.left, query, !isVertical, nearest);
 
-                if (nearest.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
+                if (nearest.distanceTo(query) > rectangleDistance) {
                     Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
                     nearest = nearest.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearest;
                 }
             } else {
                 nearest = nearest(node.right, query, !isVertical, nearest);
 
-                if (nearest.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
+                if (nearest.distanceTo(query) > rectangleDistance) {
                     Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
                     nearest = nearestLeft.distanceSquaredTo(query) > nearest.distanceSquaredTo(query) ? nearest : nearestLeft;
                 }
@@ -204,14 +210,14 @@ public class KdTree {
             if (node.point.y() > query.y()) {
                 nearest = nearest(node.left, query, !isVertical, nearest);
 
-                if (nearest.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
+                if (nearest.distanceTo(query) > rectangleDistance) {
                     Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
                     nearest = nearest.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearest;
                 }
             } else {
                 nearest = nearest(node.right, query, !isVertical, nearest);
 
-                if (nearest.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
+                if (nearest.distanceTo(query) > rectangleDistance) {
                     Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
                     nearest = nearestLeft.distanceSquaredTo(query) > nearest.distanceSquaredTo(query) ? nearest : nearestLeft;
                 }

@@ -185,43 +185,35 @@ public class KdTree {
         }
 
         if (isVertical) {
-            if (node.point.x() >= query.x()) {
-                Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
+            if (node.point.x() > query.x()) {
+                nearest = nearest(node.left, query, !isVertical, nearest);
 
-                if (nearestLeft.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
+                if (nearest.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
                     Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
-                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
-                } else {
-                    nearest = nearestLeft;
+                    nearest = nearest.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearest;
                 }
             } else {
-                Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
+                nearest = nearest(node.right, query, !isVertical, nearest);
 
-                if (nearestRight.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
+                if (nearest.distanceTo(query) > Math.abs(node.point.x() - query.x())) {
                     Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
-                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
-                } else {
-                    nearest = nearestRight;
+                    nearest = nearestLeft.distanceSquaredTo(query) > nearest.distanceSquaredTo(query) ? nearest : nearestLeft;
                 }
             }
         } else {
-            if (node.point.y() >= query.y()) {
-                Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
+            if (node.point.y() > query.y()) {
+                nearest = nearest(node.left, query, !isVertical, nearest);
 
-                if (nearestLeft.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
+                if (nearest.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
                     Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
-                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
-                } else {
-                    nearest = nearestLeft;
+                    nearest = nearest.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearest;
                 }
             } else {
-                Point2D nearestRight = nearest(node.right, query, !isVertical, nearest);
+                nearest = nearest(node.right, query, !isVertical, nearest);
 
-                if (nearestRight.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
+                if (nearest.distanceTo(query) > Math.abs(node.point.y() - query.y())) {
                     Point2D nearestLeft = nearest(node.left, query, !isVertical, nearest);
-                    nearest = nearestLeft.distanceSquaredTo(query) > nearestRight.distanceSquaredTo(query) ? nearestRight : nearestLeft;
-                } else {
-                    nearest = nearestRight;
+                    nearest = nearestLeft.distanceSquaredTo(query) > nearest.distanceSquaredTo(query) ? nearest : nearestLeft;
                 }
             }
         }
